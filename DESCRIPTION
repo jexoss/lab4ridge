@@ -1,4 +1,4 @@
-Package: lab4
+Package: lab4ridge
 Title: Linear Regression Using QR Decomposition and Reference Classes
 Version: 0.1.0
 Authors@R: 
