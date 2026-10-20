@@ -1,0 +1,27 @@
+Package: lab4
+Title: Linear Regression Using QR Decomposition and Reference Classes
+Version: 0.1.0
+Authors@R: 
+    person("Jonas", "Hautamäki Bengtsson", , "jonha849@student.liu.se", 
+    role = c("aut", "cre"))
+Description: Implements multiple linear regression with the coefficients
+    and their variances computed using the QR decomposition. The results are 
+    stored in a reference class object with methods for printing, plotting, 
+    residuals predictions, coefficients and a summary of the fitted model.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Imports: 
+    ggplot2,
+    methods,
+    rlang,
+    stats
+URL: https://github.com/jexoss/lab4
+BugReports: https://github.com/jexoss/lab4/issues
+Config/roxygen2/version: 8.1.0
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
