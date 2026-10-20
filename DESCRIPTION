@@ -1,13 +1,15 @@
 Package: lab4ridge
-Title: Linear Regression Using QR Decomposition and Reference Classes
+Title: Linear Regression and Ridge Regression Using Using QR Decomposition 
+    and Reference Classes
 Version: 0.1.0
 Authors@R: 
     person("Jonas", "Hautamäki Bengtsson", , "jonha849@student.liu.se", 
     role = c("aut", "cre"))
-Description: Implements multiple linear regression with the coefficients
-    and their variances computed using the QR decomposition. The results are 
-    stored in a reference class object with methods for printing, plotting, 
-    residuals predictions, coefficients and a summary of the fitted model.
+Description: Implements multiple linear regression and ridge regression with 
+    the coefficients and their variances computed using the QR decomposition. 
+    The results are stored in reference class objects with methods for 
+    printing, plotting, residuals, predictions, coefficients and a summary of 
+    the fitted model.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -16,8 +18,8 @@ Imports:
     methods,
     rlang,
     stats
-URL: https://github.com/jexoss/lab4
-BugReports: https://github.com/jexoss/lab4/issues
+URL: https://github.com/jexoss/lab4ridge
+BugReports: https://github.com/jexoss/lab4ridge/issues
 Config/roxygen2/version: 8.1.0
 Suggests: 
     knitr,
