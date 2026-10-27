@@ -1,0 +1,132 @@
+---
+title: "ridgereg"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ridgereg}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(lab4ridge)
+library(caret)
+library(mlbench)
+
+data("BostonHousing")
+set.seed(12345)
+```
+
+## 1. Training and test data
+
+```{r split}
+train_idx <- createDataPartition(BostonHousing$medv, p = 0.8, list = FALSE)
+train_data <- BostonHousing[train_idx, ]
+test_data <- BostonHousing[-train_idx, ]
+```
+
+## 2. Linear regression and forward selection
+```{r lm-models}
+ctrl <- trainControl(method = "cv", number = 10)
+
+lm_fit <- train(medv ~ ., data = train_data,
+                method = "lm", trControl = ctrl)
+
+fwd_fit <- train(medv ~ ., data = train_data,
+                 method = "leapForward",
+                 tuneGrid = data.frame(nvmax = 1:13),
+                 trControl = ctrl)
+
+fwd_fit
+summary(fwd_fit$finalModel)
+```
+
+Note that leapForward does not include the intercept-only model (0 covariates);
+that model only predicts the mean of medv and would perform clearly worse than
+all models above.
+
+## 3. Performance on the training data
+
+```{r train-performance}
+postResample(predict(lm_fit, train_data), train_data$medv)
+postResample(predict(fwd_fit, train_data), train_data$medv)
+```
+
+## 4. Ridge regression with caret
+
+```{r ridge-model}
+ridge_model <- list(
+  type = "Regression",
+  library = "lab4ridge",
+  label = "Ridge regression (lab4ridge)",
+  parameters = data.frame(parameter = "lambda", 
+                          class = "numeric",
+                          label = "Lambda"),
+  grid = function(x, y, len = NULL, search = "grid") {
+    data.frame(lambda = seq(0, 10, length.out = len))
+  },
+  fit = function(x, y, wts, param, lev, last, classProbs, ...) {
+    dat <- as.data.frame(x)
+    dat$.outcome <- y
+    ridgereg$new(.outcome ~ ., data = dat, lambda = param$lambda)
+  },
+  predict = function(modelFit, newdata, preProc = NULL, submodels = NULL) {
+    modelFit$predict(as.data.frame(newdata))
+  },
+  prob = NULL,
+  sort = function(x) x[order(-x$lambda), , drop = FALSE]
+)
+
+```
+
+## 5. Choosing lambda with 10-fold cross-validation
+
+```{r ridge-cv}
+lambda_grid <- data.frame(lambda = c(0, 0.1, 0.5, 1, 2, 5, 10, 20, 50))
+
+ridge_fit <- train(medv ~ ., data = train_data,
+                   method = ridge_model,
+                   tuneGrid = lambda_grid, 
+                   trControl = ctrl)
+ridge_fit
+plot(ridge_fit)
+```
+
+## 6. performance on the test data
+
+```{r test-performance}
+rbind(
+  lm = postResample(predict(lm_fit, test_data), test_data$medv),
+  forward = postResample(predict(fwd_fit, test_data), test_data$medv),
+  ridge = postResample(predict(ridge_fit, test_data), test_data$medv)
+)
+```
+
+## Concluding comments
+
+All three models perform very similarly on the test data. Forward selection 
+(11 covariates, dropping `indus` and `age`) obtained the lowest test RMSE 
+(4.41), followed closely by ordinary linear regression (4.42) and ridge 
+regression (4.46). With a test set of roughly 100 observations, these 
+differences are small enough to be attributable to the particular train/test
+split, so no model can be said to be clearly superior.
+
+For ridge regression, 10-fold cross-validation selected lambda = 5, but the
+cross-validated RMSE is almost flat for lambda between 0 and 10. This suggests 
+that shrinkage gives little benefit for this dataset: with 407 training
+observations and only 13 covariates, the least squares estimates are already
+stable. Ridge regression would be expected to help more when the number of 
+covariates is large relative to the number of observations, or when the 
+covariates are strongly correlated.
+
+The test RMSE of all models is lower than their cross-validated RMSE on the 
+training data. This is likely due to variability in the single random split
+rather than the models generalizing better than expected, and the 
+cross-validated estimates should be considered the more reliable measure
+of performance.

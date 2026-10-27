@@ -14,15 +14,21 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Imports: 
+    dplyr,
     ggplot2,
     methods,
+    nycflights13,
     rlang,
     stats
 URL: https://github.com/jexoss/lab4ridge
 BugReports: https://github.com/jexoss/lab4ridge/issues
 Config/roxygen2/version: 8.1.0
 Suggests: 
+    caret,
     knitr,
+    leaps,
+    MASS,
+    mlbench,
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(lab4)
+library(lab4ridge)
 ```
 
 ## Fitting a model
